@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Plano de Cargos e Salários</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 40px;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    form, .cargo-list {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 25px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .cargo-item {
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    .imag {
+      width: 20%;
+      height: 20%;
+      justify-content: center;
+    }
+    
+    .imagem{
+      display: flex;
+      justify-content:  center;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="imagem">
+       <img class="imag" src="https://loja.comerciomix.com.br/media/catalog/product/cache/fb4f878514d02efd710032ded901d118/v/e/vermelha1.png" alt="" />
+  </div>
+ 
+  <h1>Camisaria Alfa Ltda</h1>
+  <h1>Plano de Cargos e Salários</h1>
+
+  <form id="planoForm">
+    <label for="responsavel">Responsável pela Informação:</label>
+    <input type="text" id="responsavel" required />
+
+    <label for="aprovacao">Aprovação:</label>
+    <input type="text" id="aprovacao" required />
+
+    <label for="cargo">Cargo:</label>
+    <input type="text" id="cargo" required />
+
+    <label for="setor">Setor:</label>
+    <input type="text" id="setor" required />
+
+    <label for="cbo">Código do CBO:</label>
+    <input type="text" id="cbo" required />
+
+    <label for="descricao">Descrição do Cargo:</label>
+    <textarea id="descricao" rows="3" required></textarea>
+
+    <label for="piso">Piso Normativo (R$):</label>
+    <input type="number" id="piso" required />
+
+    <label for="junior">Salário Júnior (R$):</label>
+    <input type="number" id="junior" required />
+
+    <label for="progressaoJ">Política de Progressão Júnior:</label>
+    <textarea id="progressaoJ" rows="2" required></textarea>
+
+    <label for="pleno">Salário Pleno (R$):</label>
+    <input type="number" id="pleno" required />
+
+    <label for="progressaoP">Política de Progressão Pleno:</label>
+    <textarea id="progressaoP" rows="2" required></textarea>
+
+    <label for="senior">Salário Sênior (R$):</label>
+    <input type="number" id="senior" required />
+
+    <label for="progressaoS">Política de Progressão Sênior:</label>
+    <textarea id="progressaoS" rows="2" required></textarea>
+
+    <button type="button" onclick="adicionarCargo()">Adicionar Cargo</button>
+    <button type="button" onclick="gerarPDF()">Gerar Plano de Cargos e Salários (PDF)</button>
+  </form>
+
+  <div class="cargo-list" id="listaCargos">
+    <h2>Cargos Adicionados</h2>
+    <div id="cargosContainer"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const cargos = [];
+
+    function adicionarCargo() {
+      const responsavel = document.getElementById("responsavel").value;
+      const aprovacao = document.getElementById("aprovacao").value;
+      const cargo = document.getElementById("cargo").value;
+      const setor = document.getElementById("setor").value;
+      const cbo = document.getElementById("cbo").value;
+      const descricao = document.getElementById("descricao").value;
+      const piso = document.getElementById("piso").value;
+      const junior = document.getElementById("junior").value;
+      const pleno = document.getElementById("pleno").value;
+      const senior = document.getElementById("senior").value;
+      const progressaoJ = document.getElementById("progressaoJ").value;
+      const progressaoP = document.getElementById("progressaoP").value;
+      const progressaoS = document.getElementById("progressaoS").value;
+
+      if (!responsavel || !aprovacao || !cargo || !setor || !cbo || !descricao || !piso || !junior || !pleno || !senior || !progressaoJ || !progressaoP || !progressaoS) {
+        alert("Preencha todos os campos.");
+        return;
+      }
+
+      cargos.push({ responsavel, aprovacao, cargo, setor, cbo, descricao, piso, junior, pleno, senior, progressaoJ, progressaoP, progressaoS });
+
+      document.getElementById("planoForm").reset();
+      atualizarListaCargos();
+    }
+
+    function atualizarListaCargos() {
+      const container = document.getElementById("cargosContainer");
+      container.innerHTML = "";
+
+      cargos.forEach((c, index) => {
+        const item = document.createElement("div");
+        item.className = "cargo-item";
+        item.innerHTML = `
+          <strong>${index + 1}. ${c.cargo} (${c.setor})</strong><br>
+          CBO: ${c.cbo} | Piso Normativo: R$ ${c.piso}<br>
+          Descrição: ${c.descricao}<br>
+          Faixa Salarial: Júnior R$ ${c.junior} | Pleno R$ ${c.pleno} | Sênior R$ ${c.senior}<br>
+          Progressão Júnior: ${c.progressaoJ}<br>
+          Progressão Pleno: ${c.progressaoP}<br>
+          Progressão Sênior: ${c.progressaoS}
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    async function gerarPDF() {
+      if (cargos.length === 0) {
+        alert("Nenhum cargo adicionado.");
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+      const logoBase64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ..."; // Substitua pela imagem real
+
+      doc.addImage(logoBase64, "JPEG", 80, 10, 50, 30);
+      let y = 45;
+
+      doc.setFontSize(14);
+      doc.text("CAMISARIA ALFA LTDA", 105, y, { align: "center" });
+      y += 10;
+
+      doc.setFontSize(16);
+      doc.text("Plano de Cargos e Salários", 105, y, { align: "center" });
+
+      doc.setFontSize(12);
+      cargos.forEach((c, index) => {
+        y += 15;
+        if (y > 240) {
+          doc.addPage();
+          y = 20;
+        }
+
+        doc.text(`${index + 1}. Cargo: ${c.cargo}`, 20, y);
+        doc.text(`Setor: ${c.setor} | CBO: ${c.cbo}`, 20, y += 7);
+        doc.text(`Piso Normativo: R$ ${c.piso}`, 20, y += 7);
+
+        const desc = doc.splitTextToSize("Descrição: " + c.descricao, 170);
+        doc.text(desc, 20, y += 7);
+        y += desc.length * 7;
+
+        doc.text(`Faixa Salarial: Júnior R$ ${c.junior} | Pleno R$ ${c.pleno} | Sênior R$ ${c.senior}`, 20, y += 7);
+
+        const progJ = doc.splitTextToSize("Progressão Júnior: " + c.progressaoJ, 170);
+        doc.text(progJ, 20, y += 7);
+        y += progJ.length * 7;
+
+        const progP = doc.splitTextToSize("Progressão Pleno: " + c.progressaoP, 170);
+        doc.text(progP, 20, y += 7);
+        y += progP.length * 7;
+
+        const progS = doc.splitTextToSize("Progressão Sênior: " + c.progressaoS, 170);
+        doc.text(progS, 20, y += 7);
+        y += progS.length * 7;
+
+        // Rodapé por página
+        if (y > 240) {
+          doc.text(`Responsável pela Informação: ${c.responsavel}`, 20, 280);
+          doc.text(`Aprovação: ${c.aprovacao}`, 140, 280);
+        }
+      });
+
+      // Rodapé final
+      const ultimoCargo = cargos[cargos.length - 1];
+      doc.text(`Responsável pela Informação: ${ultimoCargo.responsavel}`, 20, 280);
+      doc.text(`Aprovação: ${ultimoCargo.aprovacao}`, 140, 280);
+
+      doc.save("Plano_Cargos_Salarios.pdf");
+    }
+  </script>
+</body>
+</html>
